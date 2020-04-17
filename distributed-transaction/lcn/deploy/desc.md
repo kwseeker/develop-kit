@@ -1,0 +1,3 @@
+因为lcn是独立的TM服务，需要首先部署lcn-tm。
+
+可以直接去官方github下载最新的代码。直接源码启动，也可以编译jar包启动，还可以使用jar制作docker镜像启动（官方已经提供了Dockerfile）。
