@@ -1,0 +1,33 @@
+server:
+  port: 8092
+spring:
+  application:
+    name: basic-service-b
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/lcn-test?characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    druid:
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      test-on-borrow: true
+  redis:
+    host: 127.0.0.1
+    port: 6379
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:9000/eureka
+  instance:
+    prefer-ip-address: true
+    ip-address: 127.0.0.1
+    instance-id: ${eureka.instance.ip-address}.${server.port}
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 10
+
+tx-lcn:
+  client:
+    manager-address: 127.0.0.1:8181   # TM接口

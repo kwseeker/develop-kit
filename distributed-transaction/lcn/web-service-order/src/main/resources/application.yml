@@ -1,0 +1,20 @@
+server:
+  port: 8082
+spring:
+  application:
+    name: web-service-order
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:9000/eureka
+  instance:
+    prefer-ip-address: true
+    ip-address: 127.0.0.1
+    instance-id: ${eureka.instance.ip-address}.${server.port}
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 10
+
+tx-lcn:
+  client:
+    manager-address: 127.0.0.1:8181   # TM接口

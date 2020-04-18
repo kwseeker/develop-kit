@@ -1,0 +1,2 @@
+#使用spring.factories实现自动装载
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=top.kwseeker.developkit.distributedtransaction.lcn.servicecommon.client.FeignConfiguration

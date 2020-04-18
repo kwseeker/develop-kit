@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: eureka-server
+server:
+  port: 9000
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false         #是否拉取其他服务的信息，默认true
+    service-url:
+      defaultZone: http://127.0.0.1:9000/eureka
+  server:
+    enable-self-preservation: false
+    eviction-interval-timer-in-ms: 1000
