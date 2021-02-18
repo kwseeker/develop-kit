@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- status是log4j2自身的日志输出级别 -->
+<!-- monitorInterval配置成一个正整数，则每隔这么久的时间（秒），log4j2会刷新一次配置。如果不配置则不会动态刷新 -->
+<Configuration status="WARN" monitorInterval="30">
+    <Properties>
+        <!-- 日志文件输出路径 -->
+        <Property name="LOG_PATH">logs</Property>
+        <!-- 日志格式 -->
+        <!--<property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight{%-5p} %style{[%pid][%16t] %-33maxLen{%c{1}:%L}{30}}{cyan} : %msg%ex%n</property>-->
+        <!--<property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight{%-5p} %style{[%pid][%16t] %-33maxLen{%c{1}}{30}}{cyan} : %msg%ex%n</property>-->
+        <property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p [%pid][%16t] %-33maxLen{%c{1}}{30} : %msg%ex%n</property>
+        <!--<property name="LOG_PATTERN">%clr{%d{yyyy-MM-dd HH:mm:ss.SSS}}{faint} %clr{%5p} %clr{${sys:PID}}{magenta} %clr{-&#45;&#45;}{faint} %clr{[%15.15t]}{faint} %clr{%-40.40c{1.}}{cyan} %clr{:}{faint} %m%n%xwEx</property>-->
+        <!--<property name="EXCEPTION_LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight{%-5p [%pid][%16t] %-33maxLen{%c{1}:%L}{30} - %msg%ex}</property>-->
+        <!-- 日志大小 -->
+        <!--<property name="LOG_SIZE">250MB</property>-->
+        <property name="LOG_SIZE">1MB</property>
+    </Properties>
+
+    <Appenders>
+        <!-- 这个输出控制台的配置 -->
+        <Console name="Console" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${LOG_PATTERN}" />
+        </Console>
+        <!--
+            系统日志，可以作为root logger的appender，供打印一些中间件的日志
+            过滤INFO以上级别日志，按日期和大小滚动压缩
+        -->
+        <RollingRandomAccessFile name="SYS_APPENDER" fileName="${LOG_PATH}/app-server.log" filePattern="${LOG_PATH}/%d{yyyyMMdd}.%i.app-server.log.gz">
+            <PatternLayout pattern="${LOG_PATTERN}" />
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${LOG_SIZE}" />
+                <!-- interval: 按filePattern中最小的时间单位滚动，modulate：是否调整到时间边界 -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+            <Filters>
+                <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY" />
+            </Filters>
+            <!-- DefaultRolloverStrategy 属性：
+                fileIndex："max"较新的日志标号值较大，数量达到最大值，则较旧的日志会被删除，其他日志会重命名(-1)，"min"相反。
+                min：默认1, max:默认7
+                compressionLevel: 压缩级别0-9, where 0 = none, 1 = best speed, through 9 = best compression, Only implemented for ZIP files.
+            -->
+            <DefaultRolloverStrategy max="8">
+                <!-- 对于指定的路径下的指定后缀的文件，只保留60天的日志文件 -->
+                <Delete basePath="${LOG_PATH}" maxDepth="1">
+                    <IfFileName glob="*.gz" />
+                    <IfLastModified age="30d" />
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingRandomAccessFile>
+        <!-- 应用错误日志 -->
+        <RollingRandomAccessFile name="APP_ERROR_APPENDER" fileName="${LOG_PATH}/app-error.log" filePattern="${LOG_PATH}/%d{yyyyMMdd}.%i.app-error.log.gz">
+            <PatternLayout pattern="${LOG_PATTERN}" />
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${LOG_SIZE}" />
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+            <Filters>
+                <ThresholdFilter level="WARN" onMatch="ACCEPT" onMismatch="DENY" />
+            </Filters>
+            <DefaultRolloverStrategy max="8">
+                <Delete basePath="${LOG_PATH}" maxDepth="1">
+                    <IfFileName glob="*.gz" />
+                    <IfLastModified age="30d" />
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingRandomAccessFile>
+    </Appenders>
+
+    <Loggers>
+        <!-- 先经过Logger, 过滤出指定package下level参数以上的日志，如果additivity为true再传递给Root -->
+        <!--<Logger name="top.kwseeker.boot.test" level="INFO" includeLocation="false" additivity="true">-->
+        <!--    <AppenderRef ref="APP_ERROR_APPENDER"/>-->
+        <!--</Logger>-->
+        <!-- root是默认的logger，也就是公共的logger，供记录一些不常打印的系统参数或者其他组件参数 -->
+        <!--<Root level="INFO">-->
+        <!--    <AppenderRef ref="Console"/>-->
+        <!--    <AppenderRef ref="SYS_APPENDER"/>-->
+        <!--</Root>-->
+        <AsyncLogger name="top.kwseeker.boot.test" level="INFO" includeLocation="false" additivity="true">
+            <AppenderRef ref="APP_ERROR_APPENDER" />
+        </AsyncLogger>
+        <AsyncRoot level="INFO">
+            <AppenderRef ref="Console" />
+            <AppenderRef ref="SYS_APPENDER" />
+        </AsyncRoot>
+    </Loggers>
+</Configuration>

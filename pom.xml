@@ -11,6 +11,7 @@
     <modules>
         <module>distributed-transaction</module>
         <module>distributed-session</module>
+        <module>log-printer</module>
     </modules>
 
     <name>develop-kit</name>
