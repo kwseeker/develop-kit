@@ -49,7 +49,7 @@
             </DefaultRolloverStrategy>
         </RollingRandomAccessFile>
         <!-- 应用错误日志 -->
-        <RollingRandomAccessFile name="APP_ERROR_APPENDER" fileName="${LOG_PATH}/app-error.log" filePattern="${LOG_PATH}/%d{yyyyMMdd}.%i.app-error.log.gz">
+        <RollingRandomAccessFile name="ERROR_APPENDER" fileName="${LOG_PATH}/app-error.log" filePattern="${LOG_PATH}/%d{yyyyMMdd}.%i.app-error.log.gz">
             <PatternLayout pattern="${LOG_PATTERN}" />
             <Policies>
                 <SizeBasedTriggeringPolicy size="${LOG_SIZE}" />
@@ -65,24 +65,46 @@
                 </Delete>
             </DefaultRolloverStrategy>
         </RollingRandomAccessFile>
+        <!-- 假如想把Service日志输出到这里 -->
+        <RollingRandomAccessFile name="DEBUG_APPENDER" fileName="${LOG_PATH}/app-debug.log" filePattern="${LOG_PATH}/%d{yyyyMMdd}.%i.app-debug.log">
+            <PatternLayout pattern="${LOG_PATTERN}" />
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${LOG_SIZE}" />
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+            </Policies>
+            <Filters>
+                <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY" />
+            </Filters>
+            <DefaultRolloverStrategy max="8">
+                <Delete basePath="${LOG_PATH}" maxDepth="1">
+                    <IfFileName glob="*.app-debug.log" />
+                    <IfLastModified age="15d" />
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingRandomAccessFile>
     </Appenders>
 
     <Loggers>
-        <!-- 先经过Logger, 过滤出指定package下level参数以上的日志，如果additivity为true再传递给Root -->
-        <!--<Logger name="top.kwseeker.boot.test" level="INFO" includeLocation="false" additivity="true">-->
-        <!--    <AppenderRef ref="APP_ERROR_APPENDER"/>-->
-        <!--</Logger>-->
-        <!-- root是默认的logger，也就是公共的logger，供记录一些不常打印的系统参数或者其他组件参数 -->
-        <!--<Root level="INFO">-->
-        <!--    <AppenderRef ref="Console"/>-->
-        <!--    <AppenderRef ref="SYS_APPENDER"/>-->
-        <!--</Root>-->
-        <AsyncLogger name="top.kwseeker.boot.test" level="INFO" includeLocation="false" additivity="true">
-            <AppenderRef ref="APP_ERROR_APPENDER" />
-        </AsyncLogger>
-        <AsyncRoot level="INFO">
-            <AppenderRef ref="Console" />
-            <AppenderRef ref="SYS_APPENDER" />
-        </AsyncRoot>
+        <!-- 先按包名精确匹配最小的Logger, 低于level级别的日志会被丢弃，过滤后的日志输出到指定的Appender，如果additivity为true再传递给最近的祖辈Logger -->
+        <Logger name="top.kwseeker.developkit.logprinter" level="INFO" includeLocation="false" additivity="true">
+            <AppenderRef ref="ERROR_APPENDER"/>
+        </Logger>
+        <Logger name="top.kwseeker.developkit.logprinter.service" level="DEBUG" includeLocation="false" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="ERROR_APPENDER"/>
+            <AppenderRef ref="DEBUG_APPENDER"/>
+        </Logger>
+        <!--root是默认的logger，也就是公共的logger，供记录一些不常打印的系统参数或者其他组件参数-->
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="SYS_APPENDER"/>
+        </Root>
+        <!--<AsyncLogger name="top.kwseeker.developkit.logprinter" level="INFO" includeLocation="false" additivity="true">-->
+        <!--    <AppenderRef ref="ERROR_APPENDER" />-->
+        <!--</AsyncLogger>-->
+        <!--<AsyncRoot level="INFO">-->
+        <!--    <AppenderRef ref="Console" />-->
+        <!--    <AppenderRef ref="SYS_APPENDER" />-->
+        <!--</AsyncRoot>-->
     </Loggers>
 </Configuration>

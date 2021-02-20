@@ -2,11 +2,19 @@ package top.kwseeker.developkit.logprinter.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import top.kwseeker.developkit.logprinter.service.LogService;
+
+import javax.annotation.Resource;
 
 @Slf4j
-@RestController("/log")
+@RestController
+@RequestMapping("/log")
 public class LogController {
+
+    @Resource
+    private LogService logService;
 
     @PostMapping("/printLog")
     public String printLog() {
@@ -14,6 +22,7 @@ public class LogController {
         log.info("info log 1");
         log.warn("warn log 1");
         log.error("error log 1");
+        logService.printLog();
         return "done";
     }
 
