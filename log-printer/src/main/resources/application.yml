@@ -1,0 +1,4 @@
+request:
+  logging:
+    ignore: /path-neednot-log               # 不打印请求日志的请求uri, 分号分隔
+    ignoreBodyLog: /body-neednot-log         # 不打印请求结果日志的请求uri，分号分隔
