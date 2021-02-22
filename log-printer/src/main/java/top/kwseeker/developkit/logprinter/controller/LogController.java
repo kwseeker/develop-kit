@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.RestController;
 import top.kwseeker.developkit.logprinter.service.LogService;
 
 import javax.annotation.Resource;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @RestController
@@ -41,14 +44,20 @@ public class LogController {
 
     @PostMapping("/conPrintLog")
     public void continuousPrintLog() throws Exception {
-        int counter = 1;
-        while (true) {
-            log.debug("debug log {}", counter);
-            log.info("info log {}", counter);
-            log.warn("warn log {}", counter);
-            log.error("error log {}", counter);
-            counter ++;
-            Thread.sleep(1);
+        AtomicInteger counter = new AtomicInteger(0);
+        ExecutorService es = Executors.newFixedThreadPool(4);
+        for (int i = 0; i < 4; i++) {
+            es.submit(() -> {
+                while (true) {
+                    int count = counter.addAndGet(1);
+                    log.debug("debug log {}", count);
+                    log.info("info log {}", count);
+                    log.warn("warn log {}", count);
+                    log.error("error log {}", count);
+                    Thread.sleep(1);
+                }
+            });
         }
+        Thread.currentThread().wait();
     }
 }

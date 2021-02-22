@@ -13,7 +13,7 @@
         <!--<property name="EXCEPTION_LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight{%-5p [%pid][%16t] %-33maxLen{%c{1}:%L}{30} - %msg%ex}</property>-->
         <!-- 日志大小 -->
         <!--<property name="LOG_SIZE">250MB</property>-->
-        <property name="LOG_SIZE">1MB</property>
+        <property name="LOG_SIZE">100MB</property>
     </Properties>
 
     <Appenders>
