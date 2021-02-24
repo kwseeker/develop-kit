@@ -1,0 +1,13 @@
+spring:
+  cache:
+    type: redis
+  redis:
+    host: localhost
+    port: 6379
+
+demo:
+  caches:
+    cache-name-prefix: demo
+    cache-config-map:
+      cache10s: 10s
+      cache2h: 2h

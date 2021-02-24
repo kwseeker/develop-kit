@@ -8,6 +8,8 @@ Spring Boot 封装了一个缓存Starter, 用于对接不同的缓存实现。�
 
 [官方文档](https://docs.spring.io/spring-framework/docs/current/reference/html/integration.html#cache)
 
+[SpEL(Spring Expression Language)](https://docs.spring.io/spring-framework/docs/current/reference/html/core.html#expressions)
+
 ## SpringBoot集成缓存方案
 
 即 SpringBoot 如何通过一致的接口集成各种缓存方案。
@@ -22,7 +24,7 @@ Spring Boot 封装了一个缓存Starter, 用于对接不同的缓存实现。�
 
 ### 注解方式声明缓存
 
-Spring缓存注解
+#### Spring缓存注解
 
 + @Cacheable (触发缓存填充)
 
@@ -63,13 +65,29 @@ Spring缓存注解
 
 + 自定义注解
 
-JSR-107 注解（Spring 4.1 就已经完全支持了JCache标准注解）
+#### JSR-107 注解（Spring 4.1 就已经完全支持了JCache标准注解）
 
 + @CacheResult
 + @CachePut
 + @CacheRemove
 + @CacheRemoveAll
 + @CacheDefaults
+
+#### Cache注解中SpEl使用方式
+
++ #param (param是参数名)
+
+  ```java
+  @Cacheable(key = "'book-'+#isbn")
+  ```
+
++ #p0 以此类推（表示第一个参数）
+
+  ```java
+  @Cacheable(key = "'book-'+#p0")
+  ```
+
+至于在＠Value()中`#{}`及上面的`#`并不是SpEL语法只是用于标识里面是SpEL表达式。
 
 ### XML方式声明缓存
 
@@ -126,6 +144,10 @@ public enum CacheType {
 
 关键是理解`RedisCacheManager`和`RedisCacheConfiguration`的作用。
 
+关于缓存对象序列化之后乱码的问题，可以更改为其他序列化器，参考`org.springframework.data.redis.serializer`这个package。
+
+
+
 ### 集成多个缓存方案
 
 官方说自行实现适配器，后面可能会添加。
@@ -167,4 +189,3 @@ Spring的缓存抽象并没有提供关于这些功能的配置，需要自行�
   ```
 
   
-

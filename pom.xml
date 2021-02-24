@@ -9,9 +9,10 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>distributed-transaction</module>
-        <module>distributed-session</module>
-        <module>log-printer</module>
+      <module>distributed-transaction</module>
+      <module>distributed-session</module>
+      <module>log-printer</module>
+      <module>cache</module>
     </modules>
 
     <name>develop-kit</name>
