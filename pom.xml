@@ -16,6 +16,8 @@
       <module>distributed-session</module>
       <module>log-printer</module>
       <module>cache</module>
+      <module>netty-cli-model</module>
+      <module>reactive-model</module>
     </modules>
 
     <name>develop-kit</name>
