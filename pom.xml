@@ -18,6 +18,8 @@
       <module>cache</module>
       <module>netty-cli-model</module>
       <module>reactive-model</module>
+      <module>rate-limiter</module>
+      <module>config-refresh</module>
     </modules>
 
     <name>develop-kit</name>
