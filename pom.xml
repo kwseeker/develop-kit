@@ -20,6 +20,8 @@
       <module>reactive-model</module>
       <module>rate-limiter</module>
       <module>config-refresh</module>
+      <module>common-util</module>
+      <module>httpclient</module>
     </modules>
 
     <name>develop-kit</name>
