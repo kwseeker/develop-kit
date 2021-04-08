@@ -1,4 +1,4 @@
-package top.kwseeker.developkit.httpclient;
+package top.kwseeker.developkit.httpclient.component;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
