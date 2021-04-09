@@ -4,7 +4,7 @@
 
 + **apache commons-httpclient  & httpcomponents:httpclient**
 
-  commons-httpclient 是 httpcomponents:httpclient 的前身，但是现在已经不维护了，apache 现在维护的是 httpcomponents:httpclient。
+  commons-httpclient 是 httpcomponents:httpclient 的前身，从2011年开始已经不再维护了，apache 现在维护的是 httpcomponents:httpclient。
 
   httpcomponents:httpclient 功能丰富，但不支持HTTP/2。
 
@@ -20,9 +20,9 @@
 
 + **HttpURLConnection & JDK9 HttpClient**
 
-  JDK自带的HTTP客户端，但是使用麻烦。无法支持 HTTP/2，缺乏连接池管理、域名控制等特性。
+  HttpURLConnection是JDK自带的HTTP客户端，但是使用麻烦。无法支持 HTTP/2，缺乏连接池管理、域名控制等特性。
 
-  为了支持 HTTP/2, 以及优化使用，自JDK9 引入了一个 high level、支持 HTTP/2 的 [HttpClient](https://docs.oracle.com/javase/9/docs/api/jdk/incubator/http/HttpClient.html)。
+  为了支持 HTTP/2, 以及优化使用，自JDK9 引入了一个 high level、支持 HTTP/2 的 [HttpClient](https://docs.oracle.com/javase/9/docs/api/jdk/incubator/http/HttpClient.html)，但是要求JDK至少升级到JDK9。
 
 + **webclient**
 

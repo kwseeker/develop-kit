@@ -11,7 +11,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.junit.Test;
-import sun.misc.Request;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,8 +29,7 @@ public class DemoTest {
     }
 
     @Test
-    public void testFluentGet() {
-        Request.
+    public void testFluentGet() throws IOException {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet("http://www.baidu.com");
         CloseableHttpResponse response = httpClient.execute(httpGet);
