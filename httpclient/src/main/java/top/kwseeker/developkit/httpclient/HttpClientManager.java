@@ -1,6 +1,5 @@
 package top.kwseeker.developkit.httpclient;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.config.RequestConfig;
@@ -25,7 +24,6 @@ import java.util.concurrent.TimeUnit;
  *  同步异步请求
  * 参考：官方demo工程单元测试
  */
-@Slf4j
 public class HttpClientManager {
 
     private static final int KEEP_ALIVE_TTL = 60;                   //和后台tomcat连接保存时间保一致
@@ -40,6 +38,7 @@ public class HttpClientManager {
     //private ThreadLocal<HttpClientContext> httpClientContext;
     //可以建立多个HttpClient但必须由同一个连接池管理
     private final HttpClient httpClient;
+    //private final HttpClient httpsClient;
     //连接池管理尽量只保持一个实例，并在里面合理控制连接数和超时时间
     private final PoolingHttpClientConnectionManager poolingConnMgr;
 
@@ -48,6 +47,10 @@ public class HttpClientManager {
     }
 
     public HttpClientManager() {
+        //Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+        //        .register("http", PlainConnectionSocketFactory.INSTANCE)
+        //        .register("https", new SSLConnectionSocketFactory(sslcontext))
+        //        .build();
         poolingConnMgr = new PoolingHttpClientConnectionManager(KEEP_ALIVE_TTL, TimeUnit.SECONDS);
         poolingConnMgr.setMaxTotal(CONN_MAX_TOTAL);                     //缺省默认: 20
         poolingConnMgr.setDefaultMaxPerRoute(CONN_MAX_PER_ROUTE);       //缺省默认: 2, 路由：ip＋port 或者 域名
@@ -66,6 +69,8 @@ public class HttpClientManager {
         };
 
         httpClient = buildHttpClient(poolingConnMgr, defaultRequestConfig, retryHandler);
+
+        //httpsClient =
     }
 
     /**

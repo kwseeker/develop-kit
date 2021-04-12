@@ -1,23 +1,28 @@
 package top.kwseeker.developkit.httpclient;
 
 import org.apache.http.*;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
 import org.apache.http.util.EntityUtils;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import top.kwseeker.developkit.httpclient.component.Content;
-import top.kwseeker.developkit.httpclient.component.HttpClientRequest;
 import top.kwseeker.developkit.httpclient.localserver.LocalServerTestBase;
 
 import java.io.IOException;
 
-public class HttpClientManagerTest extends LocalServerTestBase {
+public class FundamentalTest extends LocalServerTestBase {
 
+    /**
+     * 启动内部HttpServer
+     * @throws Exception
+     */
     @Before
     @Override
     public void setUp() throws Exception {
@@ -58,37 +63,16 @@ public class HttpClientManagerTest extends LocalServerTestBase {
         });
     }
 
-    //基本请求
     @Test
     public void testGet() throws Exception {
         final HttpHost target = start();
         final String baseURL = "http://localhost:" + target.getPort();
-
-        Content content = HttpClientRequest.Get(baseURL+"/")
-                .execute().returnContent();
-
-        Assert.assertEquals("All is well", new String(content.getRaw()));
-        Assert.assertEquals("text/plain", content.getType().getMimeType());
-    }
-
-    @Test
-    public void testPost() throws Exception {
-        final HttpHost target = start();
-        final String baseURL = "http://localhost:" + target.getPort();
-
-        Content content = HttpClientRequest.Post(baseURL+"/")
-                .execute().returnContent();
-
-        Assert.assertEquals("All is well", new String(content.getRaw()));
-        Assert.assertEquals("text/plain", content.getType().getMimeType());
-    }
-
-    //HTTPS请求
-    @Test
-    public void testHttpsPost() throws Exception {
-        final HttpHost target = start();
-        Content content = HttpClientRequest.Post("https://www.baidu.com")
-                .execute().returnContent();
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpGet httpGet = new HttpGet(baseURL + "/");
+        CloseableHttpResponse response = httpClient.execute(httpGet);
+        System.out.println(response.getStatusLine());
+        HttpEntity entity = response.getEntity();
+        EntityUtils.consume(entity);
     }
 
     @After

@@ -1,4 +1,4 @@
-package top.kwseeker.developkit.httpclient.localserver;
+package top.kwseeker.developkit.httpclient.localserver.pathhandler;
 
 import org.apache.http.*;
 import org.apache.http.entity.ByteArrayEntity;
@@ -9,14 +9,13 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 import java.util.Locale;
 
-public class EchoHandler
-        implements HttpRequestHandler {
+public class EchoHandler implements HttpRequestHandler {
 
     // public default constructor
 
     /**
-     * Handles a request by echoing the incoming request entity.
-     * If there is no request entity, an empty document is returned.
+     * 将请求HttpEntity中的内容原样返回，如果没有HttpEntity,则返回空
+     * 支持GET POST PUT
      *
      * @param request   the request
      * @param response  the response
@@ -32,12 +31,8 @@ public class EchoHandler
             throws HttpException, IOException {
 
         final String method = request.getRequestLine().getMethod().toUpperCase(Locale.ROOT);
-        if (!"GET".equals(method) &&
-                !"POST".equals(method) &&
-                !"PUT".equals(method)
-        ) {
-            throw new MethodNotSupportedException
-                    (method + " not supported by " + getClass().getName());
+        if (!"GET".equals(method) && !"POST".equals(method) && !"PUT".equals(method)) {
+            throw new MethodNotSupportedException(method + " not supported by " + getClass().getName());
         }
 
         HttpEntity entity = null;

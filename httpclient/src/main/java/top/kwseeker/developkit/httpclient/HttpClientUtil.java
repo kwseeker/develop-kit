@@ -6,6 +6,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.message.BasicNameValuePair;
+import top.kwseeker.developkit.httpclient.component.Content;
 import top.kwseeker.developkit.httpclient.component.HttpClientRequest;
 import top.kwseeker.developkit.httpclient.component.HttpClientResponse;
 
@@ -35,6 +36,22 @@ public class HttpClientUtil {
         return HttpClientRequest.Get(url)
                 .execute()
                 .parseContent(clazz);
+    }
+
+    public static <T> T doGet(String url, Map<String, String> headers, Map<String, String> params, Class<T> clazz) throws URISyntaxException, IOException {
+        URI uri = HttpClientRequest.buildUri(url, params);
+        return HttpClientRequest.Get(uri)
+                .setHeaders(headers)
+                .execute()
+                .parseContent(clazz);
+    }
+
+    public static Content doGet(String url, Map<String, String> headers, Map<String, String> params) throws URISyntaxException, IOException {
+        URI uri = HttpClientRequest.buildUri(url, params);
+        return HttpClientRequest.Get(uri)
+                .setHeaders(headers)
+                .execute()
+                .returnContent();
     }
 
     public static <T> T doPost(String url, Class<T> clazz) throws IOException {

@@ -1,11 +1,13 @@
 package top.kwseeker.developkit.httpclient.component;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.*;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HttpContext;
 import top.kwseeker.developkit.httpclient.HttpClientManager;
@@ -29,6 +31,8 @@ public class HttpClientRequest {
     private Integer socketTimeout;
     private Integer connectTimeout;
     private Integer connectionRequestTimeout;
+    //headers
+    private Header[] headers;
 
     public HttpClientRequest(HttpRequestBase request) {
         this.request = request;
@@ -55,6 +59,7 @@ public class HttpClientRequest {
     // 其他请求类型...
 
     public HttpClientResponse execute() throws IOException {
+
         HttpClient httpClient = HttpClientManager.getInstance().getHttpClient();
         return new HttpClientResponse(internalExecute(httpClient));
     }
@@ -76,9 +81,19 @@ public class HttpClientRequest {
             builder.setConnectTimeout(this.connectionRequestTimeout);
         }
         this.request.setConfig(builder.build());
+        //headers
+        if (headers != null && headers.length > 0) {
+            this.request.setHeaders(headers);
+        }
 
         //TODO httpContext 管理
         return httpClient.execute(this.request, (HttpContext) null);
+    }
+
+    public static URI buildUri(String url, Map<String, String> params) throws URISyntaxException {
+        return new URIBuilder(url)
+                .addParameters(map2NameValueList(params))
+                .build();
     }
 
     /**
@@ -86,20 +101,19 @@ public class HttpClientRequest {
      * http_URL = "http:" "//" host [ ":" port ] [ abs_path [ "?" query ]]
      * @param scheme    请求模式：http/https
      * @param host      主机名: 域名或ip
+     * @param port      端口号
      * @param path      路由路径
      * @param params    请求参数
      * @return URI
-     * @throws URISyntaxException sd
+     * @throws URISyntaxException if uri syntax error
      */
-    public URI buildUri(String scheme, String host, String path, Map<String, String> params) throws URISyntaxException {
-        List<NameValuePair> pairList = params.entrySet().stream()
-                .map(paramEntry -> (NameValuePair) new BasicNameValuePair(paramEntry.getKey(), paramEntry.getValue()))
-                .collect(Collectors.toList());
+    public static URI buildUri(String scheme, String host, int port, String path, Map<String, String> params) throws URISyntaxException {
         return new URIBuilder()
                 .setScheme(scheme)
                 .setHost(host)
+                .setPort(port)
                 .setPath(path)
-                .setParameters(pairList)
+                .setParameters(map2NameValueList(params))
                 .build();
     }
 
@@ -121,5 +135,23 @@ public class HttpClientRequest {
 
     public void setConnectionRequestTimeout(Integer connectionRequestTimeout) {
         this.connectionRequestTimeout = connectionRequestTimeout;
+    }
+
+    public HttpClientRequest setHeaders(Map<String, String> headers) {
+        this.headers = (Header[]) headers.entrySet().stream()
+                .map(headerEntry -> new BasicHeader(headerEntry.getKey(), headerEntry.getValue()))
+                .toArray();
+        return this;
+    }
+
+    public HttpClientRequest setHeaders(Header[] headers) {
+        this.headers = headers;
+        return this;
+    }
+
+    private static List<NameValuePair> map2NameValueList(Map<String, String> map) {
+        return map.entrySet().stream()
+                .map(paramEntry -> (NameValuePair) new BasicNameValuePair(paramEntry.getKey(), paramEntry.getValue()))
+                .collect(Collectors.toList());
     }
 }

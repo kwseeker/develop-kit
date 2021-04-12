@@ -1,4 +1,4 @@
-package top.kwseeker.developkit.httpclient.localserver;
+package top.kwseeker.developkit.httpclient.localserver.pathhandler;
 
 import org.apache.http.*;
 import org.apache.http.entity.AbstractHttpEntity;
