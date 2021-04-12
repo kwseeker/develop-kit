@@ -3,12 +3,15 @@ package top.kwseeker.developkit.httpclient.localserver;
 import org.apache.http.HttpHost;
 import org.apache.http.config.SocketConfig;
 import org.apache.http.impl.bootstrap.HttpServer;
+import org.apache.http.impl.bootstrap.SSLServerSetupHandler;
 import org.apache.http.impl.bootstrap.ServerBootstrap;
 import org.junit.After;
 import org.junit.Before;
 import top.kwseeker.developkit.httpclient.localserver.pathhandler.EchoHandler;
 import top.kwseeker.developkit.httpclient.localserver.pathhandler.RandomHandler;
 
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLServerSocket;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -47,8 +50,15 @@ public class LocalServerTestBase {
                 .build();
         //
         this.serverBootstrap = ServerBootstrap.bootstrap()
+                .setListenerPort(8443)
                 .setSocketConfig(socketConfig)
                 .setServerInfo(ORIGIN)
+                .setSslSetupHandler(new SSLServerSetupHandler() {
+                    @Override
+                    public void initialize(final SSLServerSocket socket) throws SSLException {
+                        socket.setEnabledProtocols(new String[] {"SSLv3", "SSLv2"});
+                    }
+                })
                 .registerHandler("/echo/*", new EchoHandler())
                 .registerHandler("/random/*", new RandomHandler());
         if (this.scheme.equals(ProtocolScheme.https)) {

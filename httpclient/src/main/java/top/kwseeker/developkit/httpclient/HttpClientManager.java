@@ -4,11 +4,19 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.ssl.SSLContexts;
 
+import javax.net.ssl.SSLContext;
+import java.io.File;
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -60,6 +68,15 @@ public class HttpClientManager {
                 .setConnectTimeout(REQ_CONN_TIMEOUT)
                 .setConnectionRequestTimeout(REQ_CONN_REQUEST_TIMEOUT)
                 .build();
+        //SSL添加信任本地自签名证书
+        SSLContext sslContext = null;
+        try {
+            sslContext = SSLContexts.custom()
+                    .loadTrustMaterial(new File("/etc/ssl/certs/java/mystore"), "123456".toCharArray(), new TrustSelfSignedStrategy())
+                    .build();
+        } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException | CertificateException | IOException e) {
+            e.printStackTrace();
+        }
         //重试
         HttpRequestRetryHandler retryHandler = new HttpRequestRetryHandler() {
             @Override
@@ -68,7 +85,7 @@ public class HttpClientManager {
             }
         };
 
-        httpClient = buildHttpClient(poolingConnMgr, defaultRequestConfig, retryHandler);
+        httpClient = buildHttpClient(poolingConnMgr, defaultRequestConfig, sslContext, retryHandler);
 
         //httpsClient =
     }
@@ -83,6 +100,15 @@ public class HttpClientManager {
                 .setConnectTimeout(connTimeout)
                 .setConnectionRequestTimeout(connReqTimeout)
                 .build();
+        //
+        SSLContext sslContext = null;
+        try {
+            sslContext = SSLContexts.custom()
+                    .loadTrustMaterial(new File("/etc/ssl/certs/java/mystore"), "123456".toCharArray(), new TrustSelfSignedStrategy())
+                    .build();
+        } catch (NoSuchAlgorithmException | KeyManagementException | KeyStoreException | CertificateException | IOException e) {
+            e.printStackTrace();
+        }
         //重试
         HttpRequestRetryHandler retryHandler = new HttpRequestRetryHandler() {
             @Override
@@ -91,7 +117,7 @@ public class HttpClientManager {
             }
         };
 
-        return buildHttpClient(this.poolingConnMgr, defaultRequestConfig, retryHandler);
+        return buildHttpClient(this.poolingConnMgr, defaultRequestConfig, sslContext, retryHandler);
     }
 
     //TODO 支持http和https
@@ -122,10 +148,12 @@ public class HttpClientManager {
      */
     private HttpClient buildHttpClient(HttpClientConnectionManager connectionManager,
                                        RequestConfig requestConfig,
+                                       SSLContext sslContext,
                                        HttpRequestRetryHandler retryHandler) {
         return HttpClients.custom()
                 .setConnectionManager(connectionManager)
                 .setDefaultRequestConfig(requestConfig)
+                .setSSLContext(sslContext)
                 .setRetryHandler(retryHandler)
                 //.evictExpiredConnections()
                 //.evictIdleConnections(3, TimeUnit.MINUTES)

@@ -1,10 +1,17 @@
 package top.kwseeker.developkit.httpclient;
 
 import org.apache.http.*;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
+import org.apache.http.ssl.SSLContexts;
 import org.apache.http.util.EntityUtils;
 import org.junit.After;
 import org.junit.Assert;
@@ -14,6 +21,8 @@ import top.kwseeker.developkit.httpclient.component.Content;
 import top.kwseeker.developkit.httpclient.component.HttpClientRequest;
 import top.kwseeker.developkit.httpclient.localserver.LocalServerTestBase;
 
+import javax.net.ssl.SSLContext;
+import java.io.File;
 import java.io.IOException;
 
 public class HttpClientManagerTest extends LocalServerTestBase {
@@ -86,9 +95,50 @@ public class HttpClientManagerTest extends LocalServerTestBase {
     //HTTPS请求
     @Test
     public void testHttpsPost() throws Exception {
+        //Content content = HttpClientRequest.Post("https://www.baidu.com")
+        //        .execute().returnContent();
         final HttpHost target = start();
-        Content content = HttpClientRequest.Post("https://www.baidu.com")
+        System.out.println(target.getPort());
+        Content content = HttpClientRequest.Post("https://localhost:"+ target.getPort() + "/")
+        //Content content = HttpClientRequest.Post("https://kwseeker.top:" + target.getPort() + "/")
                 .execute().returnContent();
+    }
+
+    @Test
+    public void testsss() throws Exception {
+        // Trust own CA and all self-signed certs
+        SSLContext sslcontext = SSLContexts.custom()
+                .loadTrustMaterial(new File("my.keystore"), "nopassword".toCharArray(),
+                        new TrustSelfSignedStrategy())
+                .build();
+        // Allow TLSv1 protocol only
+        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
+                sslcontext,
+                new String[] { "TLSv1" },
+                null,
+                SSLConnectionSocketFactory.getDefaultHostnameVerifier());
+        CloseableHttpClient httpclient = HttpClients.custom()
+                .setSSLSocketFactory(sslsf)
+                .build();
+        try {
+
+            HttpGet httpget = new HttpGet("https://httpbin.org/");
+
+            System.out.println("Executing request " + httpget.getRequestLine());
+
+            CloseableHttpResponse response = httpclient.execute(httpget);
+            try {
+                HttpEntity entity = response.getEntity();
+
+                System.out.println("----------------------------------------");
+                System.out.println(response.getStatusLine());
+                EntityUtils.consume(entity);
+            } finally {
+                response.close();
+            }
+        } finally {
+            httpclient.close();
+        }
     }
 
     @After
