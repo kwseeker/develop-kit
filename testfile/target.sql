@@ -1,0 +1,3 @@
+update proposal_record set result=1, modify_time='2021-06-08 22:38:40' where id = (select tid from (select max(id) as tid from proposal_record where proposer_id=703687444868453 and lover_id=703687474251566 and ring=0) as tmp);
+update proposal_record set result=1, modify_time='2021-06-08 22:54:19' where id = (select tid from (select max(id) as tid from proposal_record where proposer_id=703687596992682 and lover_id=703687578320145 and ring=0) as tmp);
+update proposal_record set result=1, modify_time='2021-06-08 22:59:10' where id = (select tid from (select max(id) as tid from proposal_record where proposer_id=703687560438753 and lover_id=703687560441690 and ring=0) as tmp);
