@@ -326,9 +326,16 @@
 
 + `Redission`的`RFuture`&`RPromise`
 
-  是用于获取`Redis`异步执行的命令的结果的。示例中实现类是`RedissonPromise`。方法和`CompletableFuture`类似。
+  是用于获取`Redis`异步执行的命令的结果的。示例中实现类是`RedissonPromise`。实现上引入了Netty `Promise` 和 Java`CompletableFuture` 的实现。
 
-  
+  ```
+  RedissonPromise extends CompletableFuture implement RPromise
+  		RPromise extends RFuture
+  				RFuture extends Future, CompletionStage
+  		CompletableFuture implement Future, CompletionStage
+  ```
+
+  有必要先分析`CompletableFuture`的实现原理，再分析Netty `Promise` 的原理, 最后看`Redisson`的`RPromise`。
 
   
 
