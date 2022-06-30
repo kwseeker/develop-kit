@@ -22,6 +22,8 @@
       <module>config-refresh</module>
       <module>common-util</module>
       <module>httpclient</module>
+      <module>pay</module>
+      <module>pub-sub</module>
     </modules>
 
     <name>develop-kit</name>
