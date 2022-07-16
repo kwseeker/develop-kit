@@ -12,7 +12,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>excel-accessor</module>
-        <module>simple-util</module>
+        <!--<module>simple-util</module>-->
     </modules>
 
 </project>
