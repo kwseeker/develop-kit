@@ -15,9 +15,9 @@ public class RedissonPubSubTest {
     public void testPubSub() throws InterruptedException {
         Config config = new Config();
         config.useSingleServer().setAddress("redis://127.0.0.1:6379");
+        RedissonClient redisson = Redisson.create(config);
 
         //消息管道
-        RedissonClient redisson = Redisson.create(config);
         RTopic topic = redisson.getTopic("topic-test", new SerializationCodec());
 
         //注册订阅者
@@ -30,7 +30,7 @@ public class RedissonPubSubTest {
         });
 
         //发布者发布消息
-        topic.publish(new Message());
+        topic.publish(new Message("some message..."));
 
         Thread.sleep(100000);
     }
