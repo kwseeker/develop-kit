@@ -13,6 +13,7 @@
     <modules>
         <module>simple-util</module>
         <module>configuration-loader</module>
+        <module>excel-util</module>
     </modules>
 
 </project>
