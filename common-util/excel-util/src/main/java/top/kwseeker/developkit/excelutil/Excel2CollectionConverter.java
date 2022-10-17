@@ -1,10 +1,7 @@
 package top.kwseeker.developkit.excelutil;
 
 import cn.hutool.poi.excel.WorkbookUtil;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -50,7 +47,7 @@ public class Excel2CollectionConverter {
 
         // 列索引 -> 字段
         int titleRowIndex = tabAnnotation.titleRow();
-        List<FieldColumnRelation> relations = parseFieldColumnRelations(targetClass, sheet, titleRowIndex);
+        ExcelEntityRelation excelEntityRelation = parseExcelEntityRelation(targetClass, sheet, titleRowIndex);
 
         int dataBeginRow = tabAnnotation.dataBeginRow();
         int lastRowNum = sheet.getLastRowNum();
@@ -58,9 +55,13 @@ public class Excel2CollectionConverter {
         try {
             for (int i = dataBeginRow; i <= lastRowNum; i++) {
                 Row row = sheet.getRow(i);
-                T instance = targetClass.newInstance();
+                Cell primaryCell = row.getCell(excelEntityRelation.getPrimaryColumnIndex());
+                if (primaryCell == null || primaryCell.getCellType() == CellType.BLANK) {
+                    continue;
+                }
 
-                for (FieldColumnRelation relation : relations) {
+                T instance = targetClass.newInstance();
+                for (FieldColumnRelation relation : excelEntityRelation.getRelations()) {
                     int cellIndex = relation.getColumnIndex();
                     Field field = relation.getField();
                     Cell cell = row.getCell(cellIndex);
@@ -76,7 +77,7 @@ public class Excel2CollectionConverter {
         return data;
     }
 
-    private List<FieldColumnRelation> parseFieldColumnRelations(Class<?> targetClass, Sheet sheet, int titleRowIndex) {
+    private ExcelEntityRelation parseExcelEntityRelation(Class<?> targetClass, Sheet sheet, int titleRowIndex) {
         List<FieldColumnRelation> relations = new ArrayList<>();
 
         // 获取标题行
@@ -88,16 +89,24 @@ public class Excel2CollectionConverter {
             title2CellIndexMap.put(title, i);
         }
 
+        Integer primaryColumnIndex = null;
         Field[] fields = targetClass.getDeclaredFields();
         for (Field field : fields) {
             Column columnAnnotation = field.getAnnotation(Column.class);
+            if (columnAnnotation == null) {
+                continue;
+            }
+
             String title = columnAnnotation.title();
             Integer cellIndex = title2CellIndexMap.get(title);
+            if (columnAnnotation.isPrimary()) {
+                primaryColumnIndex = cellIndex;
+            }
             FieldColumnRelation relation = new FieldColumnRelation(field, cellIndex, title);
             relations.add(relation);
         }
 
-        return relations;
+        return new ExcelEntityRelation(relations, primaryColumnIndex);
     }
 
     private <T> void fieldSetCellValue(T instance, Field field, Cell cell) {

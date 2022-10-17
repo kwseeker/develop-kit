@@ -11,4 +11,6 @@ import java.lang.annotation.*;
 public @interface Column {
 
     String title() default "";
+
+    boolean isPrimary() default false;
 }
