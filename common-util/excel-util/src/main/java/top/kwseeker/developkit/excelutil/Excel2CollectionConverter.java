@@ -2,6 +2,8 @@ package top.kwseeker.developkit.excelutil;
 
 import cn.hutool.poi.excel.WorkbookUtil;
 import org.apache.poi.ss.usermodel.*;
+import top.kwseeker.developkit.excelutil.validate.ValidateType;
+import top.kwseeker.developkit.excelutil.validate.Validator;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -64,8 +66,10 @@ public class Excel2CollectionConverter {
                 for (FieldColumnRelation relation : excelEntityRelation.getRelations()) {
                     int cellIndex = relation.getColumnIndex();
                     Field field = relation.getField();
+                    List<Validator> validators = relation.getValidators();
                     Cell cell = row.getCell(cellIndex);
-                    fieldSetCellValue(instance, field, cell);
+
+                    fieldSetCellValue(instance, field, cell, validators);
                 }
 
                 data.add(instance);
@@ -102,36 +106,43 @@ public class Excel2CollectionConverter {
             if (columnAnnotation.isPrimary()) {
                 primaryColumnIndex = cellIndex;
             }
-            FieldColumnRelation relation = new FieldColumnRelation(field, cellIndex, title);
+            List<Validator> validators = new ArrayList<>();
+            if (columnAnnotation.validateTypes().length > 0) {
+                for (ValidateType validateType : columnAnnotation.validateTypes()) {
+                    validators.add(validateType.getValidator());
+                }
+            }
+            FieldColumnRelation relation = new FieldColumnRelation(field, cellIndex, title, validators);
             relations.add(relation);
         }
 
         return new ExcelEntityRelation(relations, primaryColumnIndex);
     }
 
-    private <T> void fieldSetCellValue(T instance, Field field, Cell cell) {
+    private <T> void fieldSetCellValue(T instance, Field field, Cell cell, List<Validator> validators) {
         try {
             Class<?> fieldType = field.getType();
             field.setAccessible(true);
 
             if (fieldType == String.class) {
-                field.set(instance, cell.getStringCellValue());
+                checkAndSetField(instance, field, cell.getStringCellValue(), validators);
             } else if (fieldType == Boolean.class) {
-                field.set(instance, cell.getBooleanCellValue());
+                checkAndSetField(instance, field, cell.getBooleanCellValue(), validators);
             } else if (fieldType == Date.class) {
-                field.set(instance, cell.getDateCellValue());
+                checkAndSetField(instance, field, cell.getDateCellValue(), validators);
             } else if (Number.class.isAssignableFrom(fieldType)) {
                 if (fieldType == Short.class) {
-                    field.set(instance, (short) cell.getNumericCellValue());
+                    checkAndSetField(instance, field, (short) cell.getNumericCellValue(), validators);
                 } else if (fieldType == Integer.class) {
-                    field.set(instance, (int) cell.getNumericCellValue());
-                }
-                else if (fieldType == Long.class) {
-                    field.set(instance, (long) cell.getNumericCellValue());
+                    checkAndSetField(instance, field, (int) cell.getNumericCellValue(), validators);
+                } else if (fieldType == Long.class) {
+                    checkAndSetField(instance, field, (long) cell.getNumericCellValue(), validators);
                 } else if (fieldType == Float.class) {
-                    field.set(instance, (float) cell.getNumericCellValue());
+                    checkAndSetField(instance, field, (float) cell.getNumericCellValue(), validators);
                 } else if (fieldType == Double.class) {
-                    field.set(instance, cell.getNumericCellValue());
+                    checkAndSetField(instance, field, cell.getNumericCellValue(), validators);
+                } else {
+                    throw new BusinessException("Unsupported field type: " + fieldType);
                 }
             } else {
                 throw new BusinessException("Unsupported field type: " + fieldType);
@@ -140,5 +151,15 @@ public class Excel2CollectionConverter {
             e.printStackTrace();
             throw new BusinessException("field set cell value failed");
         }
+    }
+
+    private <T> void checkAndSetField(T instance, Field field, Object cellValue, List<Validator> validators) throws IllegalAccessException {
+        for (Validator validator : validators) {
+            Class<?> fieldType = field.getType();
+            if (!validator.matchType(fieldType) || !validator.valid(cellValue)) {
+                throw new BusinessException("cell value validate failed");
+            }
+        }
+        field.set(instance, cellValue);
     }
 }

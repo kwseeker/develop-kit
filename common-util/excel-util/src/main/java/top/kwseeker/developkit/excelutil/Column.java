@@ -1,5 +1,7 @@
 package top.kwseeker.developkit.excelutil;
 
+import top.kwseeker.developkit.excelutil.validate.ValidateType;
+
 import java.lang.annotation.*;
 
 /**
@@ -12,5 +14,9 @@ public @interface Column {
 
     String title() default "";
 
+    /* 是否是主要列,类似DB的主键 */
     boolean isPrimary() default false;
+
+    /* 列是否有特殊检查需求 */
+    ValidateType[] validateTypes() default {};
 }
