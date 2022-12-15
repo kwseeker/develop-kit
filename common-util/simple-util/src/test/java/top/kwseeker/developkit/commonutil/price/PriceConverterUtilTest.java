@@ -15,10 +15,13 @@ public class PriceConverterUtilTest {
 
         Assert.assertEquals(1.2300000190734863F, yuan1,0.000000119);  //1/(2^23)
         Assert.assertEquals(1.4299999475479126F, yuan2,0.000000119);  //1/(2^23)
+        Assert.assertEquals(1.4299999475479126F, yuan2,0.000000001);  //1/(2^23)
+
         System.out.println((int)(1.4299999475479126F * 100));   //143
-        System.out.println((int)(1.4299999475479126F * 10000000));  //14299999 类型转换有4舍5入？
+        System.out.println((int)(1.4299999475479126F * 10000000));  //14299999
 
         System.out.println(Float.valueOf(yuan2 * 100).toString());  //143.0
+        System.out.println(Float.valueOf(yuan2 * 100.107F).toString()); //143.15302 实际存储的是 143.15301513671875
         System.out.println(Float.valueOf(yuan2 * 10000000).toString()); //1.4299999E7   //这个结果可以看到浮点数直接运算还是不靠谱
 
         float a = 1.6F;
