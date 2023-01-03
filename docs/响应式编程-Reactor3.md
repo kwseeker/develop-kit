@@ -13,6 +13,9 @@ Reactor 是一个用于JVM的完全非阻塞的响应式编程框架，具备高
 **核心接口**：
 
 + Mono: 异步0-1元素序列 Future<Optional<?>>
+
+  比如一个HTTP请求产生一个响应，应该用`Mono<HttpResponse> `而不是`Flux<HttpResponse>`。
+
 + Flux：异步0-N元素序列 Future<Collection<?>>
 
 **编程方式**:
@@ -29,3 +32,16 @@ Reactor 是一个用于JVM的完全非阻塞的响应式编程框架，具备高
   + Callback：就是观察者模式，回调地狱
   + Future：无法对任务编排（即任务间没有关联，后面出现了 CompletableFuture 优化了这个问题）、不确定何时结束需要同步等待获取结果
 
+
+
+## Reactor工作流程
+
+### 核心调用
+
+
+
+
+
+## 参考
+
++ [响应式编程](https://blog.csdn.net/qian_348840260/category_10546462.html)

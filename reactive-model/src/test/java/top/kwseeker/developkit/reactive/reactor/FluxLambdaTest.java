@@ -24,4 +24,10 @@ public class FluxLambdaTest {
                             Utils.println("Subscription is completed!");
                         });
     }
+
+    @Test
+    public void test2() {
+        Flux.range(1, 4)
+                .subscribe(System.out::println);
+    }
 }
