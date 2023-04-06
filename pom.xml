@@ -24,6 +24,7 @@
       <module>httpclient</module>
       <module>pay</module>
       <module>pub-sub</module>
+      <module>guava</module>
     </modules>
 
     <name>develop-kit</name>
