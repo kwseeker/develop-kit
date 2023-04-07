@@ -161,11 +161,13 @@ public class LoadingCacheTest {
 
 代码也不少暂时没看很细，里面基于引用类型的淘汰策略（Size-based Eviction、Reference-based Eviction），以及并发控制（参考concurrencyLevel()方法）原理还是值得研究下的。
 
+![](../imgs/guava-cache-workflow.png)
+
 ### 数据结构
 
 CacheBuilder.build() 方法创建的是 **LocalLoadingCache**, 继承 **LocalManualCache**, LocalManualCache 内部包含了 **LocalCache** 对象引用，LocalCache是 核心类，LocalCache中分了多个段 **Segment** 存储数据, 段的个数通过 concurrencyLevel maxWeight等参数通过分段算法计算得到，每个段中又有一个**ReferenceEntry**的哈希表，而对于hash冲突的key采用拉链法存储。
 
-当数据量达到最大限制，支持通过LRU算法淘汰数据，LRU的实现依靠 Segment 中的 writeQueue 和 accessQueue。
+当数据量达到最大限制，支持通过LRU算法淘汰数据，LRU的实现依靠 Segment 中的 recencyQueue、writeQueue 和 accessQueue。
 
 **分段算法**：
 
@@ -193,9 +195,19 @@ void initTable(AtomicReferenceArray<ReferenceEntry<K, V>> newTable) {
 }
 ```
 
-### 淘汰策略原理
+### LRU机制
 
+依赖3个队列
 
+```java
+//读操作（写操作如果putIfAbsent=true且entry存在的情况也会记录到这个队列）的目标节点的记录队列，是ConcurrentLinkedQueue
+final Queue<ReferenceEntry<K, V>> recencyQueue; 
+ // 写操作的LRU队列，如果没配置 expireAfterWrite() 就不会用到这个队列
+final Queue<ReferenceEntry<K, V>> writeQueue;
+// 读操作的LRU队列（双向环形队列），如果没有配置 expireAfterAccess()，就不会用到这个队列
+final Queue<ReferenceEntry<K, V>> accessQueue; 
+```
 
-### 并发控制原理
+读操作时数据存在且未超时会将访问的Entry记录到 recencyQueue；读写更新等操作在某些时机会将 recencyQueue 元素按序插入 accessQueue 的尾部；紧接着判断size达到上限或节点超时后会从 accessQueue 头部开始移除数据。
 
+> 源码感觉写的很乱，很多时机没有揣摩明白为何那么写，代码调试感觉也很痛苦，逻辑跳跃性太大了（调试一个完整的LRU流程会跨多个读写操作），看了好多框架源码很久没有这种感觉了。
