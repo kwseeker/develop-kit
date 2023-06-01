@@ -1,0 +1,22 @@
+spring:
+  redis:
+    host: localhost
+    port: 6379
+    password:
+    database: 0
+
+xxl:
+  job:
+    admin:
+      addresses: http://127.0.0.1:58081/xxl-job-admin
+    accessToken: default_token
+    executor:
+      # 执行器AppName [选填]：执行器心跳注册分组依据；为空则关闭自动注册
+      appName: mp-executor
+      # 执行器注册 [选填]：优先使用该配置作为注册地址，为空时使用内嵌服务 ”IP:PORT“ 作为注册地址从而更灵活的支持容器类型执行器动态IP和动态映射端口问题
+      address:
+      # 由于本地测试环境多网卡，需要指定IP地址，否则xxl-job不知道应该注册哪个IP
+      ip: 127.0.0.1
+      port: 59998
+      logPath: /home/lee/mywork/java/develop-kit/logs/delay-queue
+      logRetentionDays: 30

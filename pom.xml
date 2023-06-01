@@ -1,33 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>top.kwseeker</groupId>
   <artifactId>develop-kit</artifactId>
-    <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
-    <modules>
-      <module>calltrace</module>
-      <module>config-center</module>
-      <module>distributed-lock</module>
-      <module>distributed-transaction</module>
-      <module>distributed-session</module>
-      <module>log-printer</module>
-      <module>cache</module>
-      <module>netty-cli-model</module>
-      <module>reactive-model</module>
-      <module>rate-limiter</module>
-      <module>config-refresh</module>
-      <module>common-util</module>
-      <module>httpclient</module>
-      <module>pay</module>
-      <module>pub-sub</module>
-      <module>guava</module>
-    </modules>
+  <packaging>pom</packaging>
+  <version>1.0-SNAPSHOT</version>
 
-    <name>develop-kit</name>
+  <modules>
+    <module>calltrace</module>
+    <module>config-center</module>
+    <module>distributed-lock</module>
+    <module>distributed-transaction</module>
+    <module>distributed-session</module>
+    <module>log-printer</module>
+    <module>cache</module>
+    <module>netty-cli-model</module>
+    <module>reactive-model</module>
+    <module>rate-limiter</module>
+    <module>config-refresh</module>
+    <module>common-util</module>
+    <module>httpclient</module>
+    <module>pay</module>
+    <module>pub-sub</module>
+    <module>guava</module>
+    <module>pool</module>
+    <module>delay-queue</module>
+  </modules>
+
+  <name>develop-kit</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>top.kwseeker.developkit</groupId>
-    <artifactId>calltrace</artifactId>
+    <artifactId>call-trace</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>calltrace</name>
+    <name>call-trace</name>
     <description>Demo for call tracing</description>
 
     <properties>
