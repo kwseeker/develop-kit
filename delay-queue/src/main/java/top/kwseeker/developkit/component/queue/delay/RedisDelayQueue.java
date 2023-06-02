@@ -43,20 +43,22 @@ public class RedisDelayQueue implements IDelayQueue {
                 return;
             }
             long current = System.currentTimeMillis();
-            if (bucketItem.getDelay() < current) {
+            if (bucketItem.getDelay() > current) {
                 return;
             }
-            redisBucket.remove(bucketKey, bucketItem);
 
             String taskKey = DelayTask.poolKey(type, bucketItem.getTaskId());
             DelayTask<?> task = redisTaskPool.get(taskKey);
             if (task == null) {
+                redisBucket.remove(bucketKey, bucketItem);
                 continue;
             }
-            redisTaskPool.remove(taskKey);
 
             String readyQueueKey = DelayTask.readyQueueKey(type);
             redisReadyQueue.leftPush(readyQueueKey, task);
+
+            redisBucket.remove(bucketKey, bucketItem);
+            redisTaskPool.remove(taskKey);
         }
     }
 

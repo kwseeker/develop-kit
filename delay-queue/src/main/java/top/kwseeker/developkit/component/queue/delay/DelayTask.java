@@ -18,7 +18,7 @@ public class DelayTask<T> {
     //延迟截至时间戳 ms
     private Long delay;
     //执行超时时间(time-to-run)，s
-    private Integer ttr;
+    private Integer ttr = 60;
     //重试计数
     private Integer retryTimes = 0;
     //最大重试次数
@@ -59,6 +59,10 @@ public class DelayTask<T> {
 
         Type(String name) {
             this.name = name;
+        }
+
+        public Type get(String name) {
+            return Type.valueOf(name);
         }
     }
 }

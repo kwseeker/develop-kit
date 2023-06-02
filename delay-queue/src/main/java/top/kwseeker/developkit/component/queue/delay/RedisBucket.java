@@ -47,6 +47,7 @@ public class RedisBucket {
     }
 
     public void remove(String bucketKey, BucketItem item) {
-        stringRedisTemplate.opsForZSet().remove(bucketKey, item.getTaskId());
+        double score = item.getDelay();
+        stringRedisTemplate.opsForZSet().removeRangeByScore(bucketKey, score, score);
     }
 }

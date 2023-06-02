@@ -48,7 +48,7 @@ public class MpJobHandler extends AbstractDelayTaskHandler {
 
     public void destroy() throws InterruptedException {
         log.info("Mp job handler destroy");
-        es.awaitTermination(30, TimeUnit.SECONDS);
+        es.awaitTermination(10, TimeUnit.SECONDS);
     }
 
     static class MpJobProcess extends DelayTaskProcess {

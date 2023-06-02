@@ -27,6 +27,7 @@ public class RedisTaskPool {
     }
 
     public void remove(String taskKey) {
-        stringRedisTemplate.opsForValue().getAndDelete(taskKey);
+        //stringRedisTemplate.opsForValue().getAndDelete(taskKey);  //redis 6.2.0 后才支持
+        stringRedisTemplate.delete(taskKey);
     }
 }

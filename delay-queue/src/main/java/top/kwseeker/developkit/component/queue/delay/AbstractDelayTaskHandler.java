@@ -24,6 +24,7 @@ public abstract class AbstractDelayTaskHandler {
         while (true) {
             job = delayQueue.pollReady(type);
             if (job == null) {
+                log.info("no task to handle: " + type);
                 break;      //为 null 说明暂时没有更多到期（ready）待处理的任务
             }
 
